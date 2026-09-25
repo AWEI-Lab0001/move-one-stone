@@ -6,15 +6,15 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
 
 type Review = { effort: number; achievement: number; note: string; image?: string };
-type Stone = { id: string; action: string; weight: number; outcome: string; done: boolean; review: Review };
-type DayData = { bigStone: string; finishLine: string; stones: Stone[]; freeStones: Stone[]; starterAction: string };
+type Stone = { id: string; action: string; weight: number; outcome: string; done: boolean; review: Review; starterAction: string };
+type DayData = { bigStone: string; finishLine: string; stones: Stone[]; freeStones: Stone[]; starterAction?: string };
 type SavedDays = Record<string, DayData>;
 
 const STORAGE_KEY = "shitouji-v01-days";
 const uid = () => typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`;
 const blankReview = (): Review => ({ effort: 0, achievement: 0, note: "" });
-const newStone = (overrides: Partial<Stone> = {}): Stone => ({ id: uid(), action: "", weight: 1, outcome: "", done: false, review: blankReview(), ...overrides });
-const emptyDay = (): DayData => ({ bigStone: "", finishLine: "", stones: [newStone()], freeStones: [], starterAction: "" });
+const newStone = (overrides: Partial<Stone> = {}): Stone => ({ id: uid(), action: "", weight: 1, outcome: "", done: false, review: blankReview(), starterAction: "", ...overrides });
+const emptyDay = (): DayData => ({ bigStone: "", finishLine: "", stones: [newStone()], freeStones: [] });
 const dateKey = (date: Date) => `${date.getFullYear()}-${`${date.getMonth() + 1}`.padStart(2, "0")}-${`${date.getDate()}`.padStart(2, "0")}`;
 const todayKey = () => dateKey(new Date());
 const displayDate = (value: string) => {
@@ -81,6 +81,7 @@ function StoneRow({ stone, index, kind, isNext, expanded, onExpand, onPatch, onD
       <div className="stone-actions">{stone.done && <button className="icon-button review-toggle" type="button" onClick={onExpand} aria-label="展开评价"><ChevronDown className={expanded ? "rotate" : ""} /></button>}<button className="icon-button delete" type="button" onClick={onDelete} aria-label="删除小石头"><Trash2 /></button></div>
     </div>
     {isNext && !stone.done && <span className="next-label">下一块</span>}
+    {isNext && !stone.done && <div className="starter-card"><span className="starter-icon"><GripVertical /></span><div><strong>现在先做什么？</strong></div><input value={stone.starterAction || ""} onChange={(event) => onPatch({ starterAction: event.target.value })} placeholder="例如：打开文档，先写第一句话" aria-label={`第${index + 1}块小石头现在先做什么`} /></div>}
     {expanded && stone.done && <ReviewPanel stone={stone} onReview={(review) => onPatch({ review: { ...stone.review, ...review } })} />}
   </article>;
 }
@@ -101,7 +102,7 @@ export default function Home() {
   const nextStone = day.stones.find((stone) => !stone.done);
   const history = useMemo(() => [...new Set(Object.values(days).map((saved) => saved.bigStone.trim()).filter(Boolean))].slice(-6).reverse(), [days]);
 
-  useEffect(() => { try { const saved = localStorage.getItem(STORAGE_KEY); if (saved) setDays(JSON.parse(saved)); } catch { setNotice("本机记录读取失败，请检查浏览器存储权限。"); } finally { setHydrated(true); } }, []);
+  useEffect(() => { try { const saved = localStorage.getItem(STORAGE_KEY); if (saved) { const parsed = JSON.parse(saved) as SavedDays; const normalized = Object.fromEntries(Object.entries(parsed).map(([key, value]) => { const stones = value.stones.map((stone) => ({ ...stone, starterAction: stone.starterAction || "" })); const legacyStarter = typeof value.starterAction === "string" ? value.starterAction : ""; const nextIndex = stones.findIndex((stone) => !stone.done); if (legacyStarter && nextIndex >= 0 && !stones[nextIndex].starterAction) stones[nextIndex] = { ...stones[nextIndex], starterAction: legacyStarter }; return [key, { bigStone: value.bigStone, finishLine: value.finishLine, stones, freeStones: value.freeStones.map((stone) => ({ ...stone, starterAction: stone.starterAction || "" })) }]; })); setDays(normalized); } } catch { setNotice("本机记录读取失败，请检查浏览器存储权限。"); } finally { setHydrated(true); } }, []);
   useEffect(() => { if (!hydrated) return; try { localStorage.setItem(STORAGE_KEY, JSON.stringify(days)); } catch { setNotice("照片可能过大，本次修改暂时无法保存。"); } }, [days, hydrated]);
   useEffect(() => { if ("serviceWorker" in navigator) void navigator.serviceWorker.register("/sw.js"); }, []);
 
@@ -155,7 +156,6 @@ export default function Home() {
       <div className="mobile-weight-hint" aria-hidden="true">重量 1–5</div>
       <div className="stone-list" onClick={(event) => event.stopPropagation()}>{day.stones.map((stone, index) => <StoneRow key={stone.id} stone={stone} index={index} kind="big" isNext={stone.id === nextStone?.id} expanded={expanded === stone.id} onExpand={() => setExpanded(expanded === stone.id ? null : stone.id)} onPatch={(patch) => updateStone("stones", stone.id, patch)} onDelete={() => removeStone("stones", stone.id)} onComplete={(checked) => completeStone("stones", stone, checked)} />)}</div>
       <button className="add-button" type="button" onClick={() => addStone("stones")}><CirclePlus /> 添加一块小石头</button>
-      {nextStone && <div className="starter-card"><span className="starter-icon"><GripVertical /></span><div><strong>现在先做什么？</strong></div><input value={day.starterAction || ""} onChange={(event) => updateDay((current) => ({ ...current, starterAction: event.target.value }))} placeholder="例如：打开文档，先写第一句话" aria-label="现在先做什么" /></div>}
       <div className="free-section"><div className="section-heading compact"><div><span className="step-number mint">03</span><div><h2>今日自由小石头</h2><p>记录临时完成、但同样有意义的事</p></div></div></div>
         <div className="stone-list free-list" onClick={(event) => event.stopPropagation()}>{day.freeStones.length === 0 && <button className="empty-free" type="button" onClick={() => addStone("freeStones")}><span><Plus /></span><strong>记录第一块自由小石头</strong><small>健身、读书、主动沟通……都值得被看见</small></button>}{day.freeStones.map((stone, index) => <StoneRow key={stone.id} stone={stone} index={index} kind="free" expanded={expanded === stone.id} onExpand={() => setExpanded(expanded === stone.id ? null : stone.id)} onPatch={(patch) => updateStone("freeStones", stone.id, patch)} onDelete={() => removeStone("freeStones", stone.id)} onComplete={(checked) => completeStone("freeStones", stone, checked)} />)}</div>
         {day.freeStones.length > 0 && <button className="add-button subtle" type="button" onClick={() => addStone("freeStones")}><Plus /> 记录一块自由小石头</button>}

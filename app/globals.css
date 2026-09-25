@@ -146,7 +146,7 @@ input::placeholder, textarea::placeholder { color: #9ba9a2; }
 .add-button svg { width: 17px; }
 .add-button.subtle { background: transparent; }
 .mobile-weight-hint { display: none; }
-.starter-card { margin-top: 14px; display: grid; grid-template-columns: 38px minmax(150px,.65fr) 1fr; align-items: center; gap: 11px; padding: 12px 14px; border: 1px solid #eedcae; border-radius: 15px; background: #fff9e9; }
+.starter-card { margin: 0 10px 10px 48px; display: grid; grid-template-columns: 38px minmax(150px,.65fr) 1fr; align-items: center; gap: 11px; padding: 11px 12px; border: 1px solid #eedcae; border-radius: 12px; background: #fff9e9; animation: slide-down .25s ease-out; }
 .starter-icon { width: 34px; height: 34px; border-radius: 11px; display: grid; place-items: center; background: #f6bd60; color: #6d4513; }
 .starter-icon svg { width: 17px; }
 .starter-card > div { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
@@ -241,7 +241,7 @@ input::placeholder, textarea::placeholder { color: #9ba9a2; }
   .stone-actions .delete { width: 24px; }
   .stone-actions:empty { display: none; }
   .review-panel { margin-left: 9px; }
-  .starter-card { grid-template-columns: 36px 1fr; }
+  .starter-card { margin: 0 8px 9px; grid-template-columns: 36px 1fr; }
   .starter-card input { grid-column: span 2; }
   .today-summary { padding: 19px; border-radius: 21px; display: block; }
   .today-summary h2 { margin-bottom: 15px; }
