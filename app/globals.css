@@ -42,9 +42,9 @@ input::placeholder, textarea::placeholder { color: #9ba9a2; }
 .brand { display: flex; align-items: center; gap: 12px; }
 .brand-mark { width: 42px; height: 42px; display: grid; place-items: center; border-radius: 14px; color: #f6bd60; background: #17324d; box-shadow: 0 8px 24px #17324d2b; }
 .brand-mark svg { width: 23px; }
-.brand div { display: flex; flex-direction: column; gap: 1px; }
-.brand strong { font-family: Georgia, "Songti SC", serif; font-size: 21px; letter-spacing: .12em; }
-.brand div span { font-size: 12px; color: #73827a; letter-spacing: .03em; }
+.brand-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 0; }
+.brand-copy strong { color: #17324d; font-family: "Songti SC", "STSong", "Microsoft YaHei UI", serif; font-size: 25px; font-weight: 800; line-height: 1.05; letter-spacing: .12em; }
+.brand-copy em { color: #718078; font-family: Georgia, "Times New Roman", serif; font-size: 11px; font-style: normal; font-weight: 700; line-height: 1.35; letter-spacing: .08em; }
 .date-nav { display: flex; align-items: center; padding: 4px; gap: 2px; background: #fff9; border: 1px solid #dce6e2; border-radius: 14px; box-shadow: 0 8px 24px #17324d0a; }
 .date-nav button { width: 34px; height: 34px; display: grid; place-items: center; border: 0; background: transparent; border-radius: 10px; cursor: pointer; }
 .date-nav button:hover { background: #edf3f0; }
@@ -214,7 +214,6 @@ input::placeholder, textarea::placeholder { color: #9ba9a2; }
 @media (max-width: 620px) {
   .app-shell { padding-bottom: 40px; }
   .topbar { height: auto; padding: 16px; align-items: flex-start; }
-  .brand div span { display: none; }
   .brand-mark { width: 38px; height: 38px; }
   .date-nav label { min-width: 126px; font-size: 12px; }
   .page-grid { margin-top: 11px; padding: 0 13px; gap: 18px; }
@@ -258,8 +257,6 @@ input::placeholder, textarea::placeholder { color: #9ba9a2; }
 
 /* Move One Stone V0.2 */
 .brand { border: 0; padding: 0; background: transparent; text-align: left; cursor: pointer; }
-.brand strong { display: flex; align-items: baseline; gap: 8px; letter-spacing: .02em; }
-.brand strong em { color: #65786f; font-family: "Microsoft YaHei UI", "PingFang SC", sans-serif; font-size: 13px; font-style: normal; font-weight: 700; letter-spacing: .08em; }
 .main-nav { display: flex; align-items: center; gap: 3px; padding: 4px; border: 1px solid #dce6e2; border-radius: 13px; background: #ffffffb8; box-shadow: 0 7px 24px #17324d0a; }
 .main-nav button { height: 34px; display: flex; align-items: center; gap: 5px; padding: 0 11px; border: 0; border-radius: 9px; background: transparent; color: #74857c; font-size: 12px; font-weight: 800; cursor: pointer; }
 .main-nav button:hover { background: #edf3f0; }
@@ -368,14 +365,13 @@ input::placeholder, textarea::placeholder { color: #9ba9a2; }
   .main-nav { order: 3; margin: 0 auto; }
 }
 @media (max-width: 620px) {
-  .topbar { display: grid; grid-template-columns: 1fr auto; padding: 13px; }
-  .brand { min-width: 0; }
-  .brand strong { font-size: 17px; white-space: nowrap; }
-  .brand strong em { font-size: 11px; }
-  .brand div > span { display: none; }
-  .main-nav { grid-column: span 2; order: 2; width: 100%; justify-content: center; }
-  .main-nav button { flex: 1; justify-content: center; }
-  .date-nav { grid-column: span 2; order: 3; margin: 0 auto; }
+  .topbar { display: grid; grid-template-columns: minmax(0, 1fr); padding: 13px; }
+  .brand { grid-column: 1; min-width: 0; }
+  .brand-copy strong { font-size: 22px; white-space: nowrap; }
+  .brand-copy em { font-size: 10px; }
+  .main-nav { grid-column: 1; order: 2; width: 100%; max-width: 100%; min-width: 0; justify-content: center; }
+  .main-nav button { flex: 1; min-width: 0; justify-content: center; padding-inline: 8px; }
+  .date-nav { grid-column: 1; order: 3; margin: 0 auto; }
   .heading-actions .autosave { display: none; }
   .complete-chip { padding: 4px 6px; font-size: 10px; }
   .remove-big { font-size: 0; padding: 6px; }

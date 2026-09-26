@@ -1,4 +1,4 @@
-# Move One Stone 第二轮方案
+# 石头记 · Move One Stone 第二轮方案
 
 更新日期：2026-09-26
 
